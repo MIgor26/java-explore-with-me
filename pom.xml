@@ -18,7 +18,7 @@
 	<packaging>pom</packaging>
 
 	<modules>
-		<module>stat-service</module>
+		<module>stats</module>
 		<module>main-service</module>
 	</modules>
 
