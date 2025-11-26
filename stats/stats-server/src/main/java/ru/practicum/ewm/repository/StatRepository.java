@@ -17,7 +17,7 @@ public interface StatRepository extends JpaRepository<EndpointHit, Long> {
             "GROUP BY e.app, e.uri " +
             "ORDER BY COUNT(e.id) DESC")
     List<ViewStatsDto> getStats(@Param("start") LocalDateTime start,
-                                     @Param("end") LocalDateTime end);
+                                @Param("end") LocalDateTime end);
 
     @Query("SELECT new ru.practicum.ewm.ViewStatsDto(e.app, e.uri, COUNT(distinct e.ip)) " +
             "FROM EndpointHit e " +
@@ -25,7 +25,7 @@ public interface StatRepository extends JpaRepository<EndpointHit, Long> {
             "GROUP BY e.app, e.uri " +
             "ORDER BY COUNT(e.id) DESC")
     List<ViewStatsDto> getUniqueStats(@Param("start") LocalDateTime start,
-                                @Param("end") LocalDateTime end);
+                                      @Param("end") LocalDateTime end);
 
     @Query("SELECT new ru.practicum.ewm.ViewStatsDto(e.app, e.uri, COUNT(e.id)) " +
             "FROM EndpointHit e " +
@@ -33,8 +33,8 @@ public interface StatRepository extends JpaRepository<EndpointHit, Long> {
             "GROUP BY e.app, e.uri " +
             "ORDER BY COUNT(e.id) DESC")
     List<ViewStatsDto> getStatsWithUris(@Param("start") LocalDateTime start,
-                                @Param("end") LocalDateTime end,
-                                @Param("uris") List<String> uris);
+                                        @Param("end") LocalDateTime end,
+                                        @Param("uris") List<String> uris);
 
     @Query("SELECT new ru.practicum.ewm.ViewStatsDto(e.app, e.uri, COUNT(distinct e.ip)) " +
             "FROM EndpointHit e " +
@@ -42,9 +42,8 @@ public interface StatRepository extends JpaRepository<EndpointHit, Long> {
             "GROUP BY e.app, e.uri " +
             "ORDER BY COUNT(e.id) DESC")
     List<ViewStatsDto> getUniqueStatsWithUris(@Param("start") LocalDateTime start,
-                                        @Param("end") LocalDateTime end,
-                                        @Param("uris") List<String> uris);
-
+                                              @Param("end") LocalDateTime end,
+                                              @Param("uris") List<String> uris);
 
 
 }
