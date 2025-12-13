@@ -35,9 +35,9 @@ public class StatsServiceImpl implements StatsService {
         log.info("Проверка сохранения");///
         List<ViewStatsDto> statistics;///
         statistics = statRepository.getUniqueStatsWithUris(LocalDateTime.now().minusYears(100), LocalDateTime.now(), List.of(hitDto.getUri()));///
-        for (ViewStatsDto stat : statistics) {///
+        for (ViewStatsDto stat : statistics) {
             System.out.println(stat);///
-        }///
+        }
         log.info("Завершение работы StatsServiceImpl метод addHit");///
     }
 
@@ -76,9 +76,9 @@ public class StatsServiceImpl implements StatsService {
             }
         }
         log.info("Получена статистика:");///
-        for (ViewStatsDto stat : statistics) {///
-            System.out.println(stat);///
-        }///
+        for (ViewStatsDto stat : statistics) {
+            System.out.println(stat);
+        }
         return statistics;
     }
 }
