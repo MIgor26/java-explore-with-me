@@ -18,7 +18,11 @@ public interface RequestRepository extends JpaRepository<Request, Long> {
 
     List<Request> findAllByIdIn(List<Long> requestIdList);
 
-    Long countByEventIdAndStatus(Long eventId, RequestStatus requestStatus);
+
+    @Query("SELECT COUNT(r) FROM Request r WHERE r.event.id = :eventId and r.status = :status")
+    long countByEventIdAndStatus(Long eventId, RequestStatus status);
+
+    //Long countByEventIdAndStatus(Long eventId, RequestStatus requestStatus);
 
     @Query("select r from Request r " +
             "join fetch r.event e " +
