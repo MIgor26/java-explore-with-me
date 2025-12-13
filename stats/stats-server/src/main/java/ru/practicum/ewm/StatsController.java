@@ -15,7 +15,6 @@ import java.util.List;
 @RestController
 @Slf4j
 @RequiredArgsConstructor
-@Validated
 public class StatsController {
     private final StatsService statsService;
 

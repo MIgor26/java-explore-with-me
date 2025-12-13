@@ -27,8 +27,9 @@ public class StatsClient {
     }
 
     public List<ViewStatsDto> getStats(LocalDateTime start, LocalDateTime end, List<String> uris, Boolean unique) {
+
         UriComponentsBuilder builder = UriComponentsBuilder
-                .fromPath("/stats")
+                .fromHttpUrl("http://localhost:9090/stats")
                 .queryParam("start", start.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")))
                 .queryParam("end", end.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
 
