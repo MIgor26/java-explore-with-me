@@ -1,6 +1,7 @@
 package ru.practicum.ewm.service;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.ewm.EndpointHitDto;
@@ -13,6 +14,7 @@ import ru.practicum.ewm.repository.StatRepository;
 import java.time.LocalDateTime;
 import java.util.List;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
@@ -23,23 +25,30 @@ public class StatsServiceImpl implements StatsService {
     @Override
     @Transactional
     public void addHit(EndpointHitDto hitDto) {
+        log.info("Начало работы StatsServiceImpl метод addHit");///
+        log.info("Получены параметры");///
+        log.info("hitDto = " + hitDto);///
         EndpointHit hit = endpointHitMapper.toHit(hitDto);
-        System.out.println("Работа метода addHit");
-        System.out.println("Данные для сохранения");
-        System.out.println(hit);
+        log.info("После преобразования в сущность параметры следующие");///
+        log.info("hit = " + hit);///
         statRepository.save(hit);
+        log.info("Проверка сохранения");///
+        List<ViewStatsDto> statistics;///
+        statistics = statRepository.getUniqueStatsWithUris(LocalDateTime.now().minusYears(100), LocalDateTime.now(), List.of(hitDto.getUri()));///
+        for (ViewStatsDto stat : statistics) {///
+            System.out.println(stat);///
+        }///
+        log.info("Завершение работы StatsServiceImpl метод addHit");///
     }
 
     @Override
     public List<ViewStatsDto> getStats(LocalDateTime start, LocalDateTime end, List<String> uris, boolean unique) {
-        System.out.println("Работа сервера статистики метод getStats");
-        System.out.println("Получены параметры");
-        System.out.println("start = " + start);
-        System.out.println("end = " + end);
-        for (String uri : uris) {
-            System.out.println("uri = " + uri);
-        }
-        System.out.println("unique = " + unique);
+        log.info("Начало работы StatsServiceImpl метод getStats");///
+        log.info("Получены параметры");
+        log.info("start = " + start);
+        log.info("end = " + end);
+        log.info("uri = " + uris.getFirst());
+        log.info("unique = " + unique);///
 
         if (start == null) start = LocalDateTime.now().withHour(0).withMinute(0).withSecond(0);
         if (end == null) end = LocalDateTime.now();
@@ -47,34 +56,29 @@ public class StatsServiceImpl implements StatsService {
             throw new ValidationException("Дата окончания не может быть позже даты начала выборки");
         }
 
-        System.out.println("Применяемые параметры");
-        System.out.println("start = " + start);
-        System.out.println("end = " + end);
-        for (String uri : uris) {
-            System.out.println("uri = " + uri);
-        }
-        System.out.println("unique = " + unique);
+        log.info("После обработки дат получаем следующее:");///
+        log.info("start = " + start);///
+        log.info("end = " + end);///
 
         List<ViewStatsDto> statistics;
 
         if (uris != null && !uris.isEmpty()) {
             if (unique) {
-                System.out.println("Сработало условие uris != null && !uris.isEmpty() && unique = true");
                 statistics = statRepository.getUniqueStatsWithUris(start, end, uris);
             } else {
-                System.out.println("Сработало условие uris != null && !uris.isEmpty() && unique = false");
                 statistics = statRepository.getStatsWithUris(start, end, uris);
             }
         } else {
             if (unique) {
-                System.out.println("Сработало условие uris == null && unique = true");
                 statistics = statRepository.getUniqueStats(start, end);
             } else {
-                System.out.println("Сработало условие uris == null && unique = false");
                 statistics = statRepository.getStats(start, end);
             }
         }
-        System.out.println(statistics.size());
+        log.info("Получена статистика:");///
+        for (ViewStatsDto stat : statistics) {///
+            System.out.println(stat);///
+        }///
         return statistics;
     }
 }

@@ -222,7 +222,6 @@ public class EventServiceImpl implements EventService {
                 .toList();
     }
 
-
     // Приватные: изменение статуса (подтверждена, отменена) заявок на участие в событии текущего пользователя
     @Override
     public EventRequestStatusUpdateResult updateRequest(Long userId, Long eventId,
@@ -379,6 +378,8 @@ public class EventServiceImpl implements EventService {
                 .ip(userIp)
                 .timestamp(LocalDateTime.now())
                 .build();
+        log.info("Передача данных в сервер статистики о просмотре события id = {} и ip = {}", eventId, userIp);
+        log.info("Сформирован hitDto = {}", hitDto);
         statsClient.addHit(hitDto);
         log.info("Событие получено");
         return addConfirmedRequestsAndViews(eventMapper.toEventFullDto(event));
@@ -421,10 +422,8 @@ public class EventServiceImpl implements EventService {
         );
     }
 
-
     private EventFullDto addConfirmedRequestsAndViews(EventFullDto eventFullDto) {
-        log.info("Начало работы addConfirmedRequestsAndViews");
-        System.out.println("Начало работы addConfirmedRequestsAndViews");
+        log.info("Начало работы addConfirmedRequestsAndViews");///
 
         // Подтверждённые запросы
         eventFullDto.setConfirmedRequests(
@@ -432,20 +431,18 @@ public class EventServiceImpl implements EventService {
         System.out.println("Добавлены подтверждённые запросы = " + eventFullDto.getConfirmedRequests());
 
         // Получение просмотров
-        LocalDateTime start = eventFullDto.getPublishedOn() != null
-                ? eventFullDto.getPublishedOn()
-                : LocalDateTime.now().minusYears(100);
+        LocalDateTime start = LocalDateTime.now().minusYears(100);
         List<String> uris = List.of("/events/" + eventFullDto.getId());
-        System.out.println("Сформированы параметры для statsClient");
-        System.out.println("start = " + start);
-        System.out.println("LocalDateTime.now() = " + LocalDateTime.now());
-        System.out.println("uris = " + uris);
+        log.info("Сформированы параметры для statsClient");
+        log.info("start = " + start);
+        log.info("LocalDateTime.now() = " + LocalDateTime.now());
+        log.info("uris = " + uris);
         List<ViewStatsDto> viewStatsDtoList = statsClient.getStats(start, LocalDateTime.now(), uris, true);
-//        Map<Long, Long> viewsMap = viewStatsDtoList.stream()
-//                .collect(Collectors.toMap(
-//                        v -> Long.parseLong(v.getUri().split("/")[2]),
-//                        ViewStatsDto::getHits
-//                ));
+        log.info("Из сервиса статистики получена следующая информация");
+        log.info("Получена статистика:");
+        for (ViewStatsDto stat : viewStatsDtoList) {
+            System.out.println(stat);
+        }
         eventFullDto.setViews(viewStatsDtoList.isEmpty()
                 ? 0L
                 : viewStatsDtoList.getFirst().getHits());
@@ -453,18 +450,13 @@ public class EventServiceImpl implements EventService {
         return eventFullDto;
     }
 
-
     private EventShortDto addShortConfirmedRequestsAndViews(EventShortDto eventShortDto) {
 
         eventShortDto.setConfirmedRequests(
                 requestRepository.countByEventIdAndStatus(eventShortDto.getId(), RequestStatus.CONFIRMED));
 
-        // Добавить views к каждому событию
         List<String> uris = new ArrayList<>();
-
-        // создаем uri для обращения к базе данных статистики
         uris.add("/events/" + eventShortDto.getId());
-
         List<ViewStatsDto> viewStatsDtoList = statsClient.getStats(LocalDateTime.now().minusYears(100), LocalDateTime.now(), uris, true);
         if (viewStatsDtoList.isEmpty()) {
             eventShortDto.setViews(0L);

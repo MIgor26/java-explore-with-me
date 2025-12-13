@@ -89,6 +89,4 @@ public class PrivateEventController {
                 userId + eventId + eventRequestStatusUpdateRequest);
         return eventService.updateRequest(userId, eventId, eventRequestStatusUpdateRequest);
     }
-
-
 }

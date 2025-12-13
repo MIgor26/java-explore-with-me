@@ -20,7 +20,7 @@ public class StatsController {
     @PostMapping("/hit")
     @ResponseStatus(HttpStatus.CREATED)
     public void addHit(@RequestBody @Valid EndpointHitDto hitDto) {
-        log.info("POST запрос модуля статистики на сохранение информации о том, что к эндпоинту был запрос");
+        log.info("POST/hit in StatsController. hitDto = {}", hitDto);
         statsService.addHit(hitDto);
     }
 
@@ -29,8 +29,7 @@ public class StatsController {
                                        @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime end,
                                        @RequestParam(required = false) List<String> uris,
                                        @RequestParam(defaultValue = "false") boolean unique) {
-        log.info("GET запрос модуля статистики на получение статистики по посещениям");
-
+        log.info("GET/stats in StatsController. start = {}, end = {}, uris = {}, unique = {}", start, end, uris.getFirst(), unique);
         return statsService.getStats(start, end, uris, unique);
     }
 }

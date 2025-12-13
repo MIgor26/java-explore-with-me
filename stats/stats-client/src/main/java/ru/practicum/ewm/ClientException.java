@@ -11,5 +11,4 @@ public class ClientException extends RuntimeException {
         this.status = status;
         this.description = description;
     }
-
 }
