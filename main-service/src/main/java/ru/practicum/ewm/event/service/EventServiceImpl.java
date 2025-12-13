@@ -63,8 +63,8 @@ public class EventServiceImpl implements EventService {
     // Админ: редактирование данных события и его статуса (отклонение/публикация).
     @Override
     public EventFullDto updateEventByAdmin(Long eventId, UpdateEventAdminRequest updateEventAdminRequest) {
-        Event eventToUpdate = eventRepository.findById(eventId).
-                orElseThrow(() -> new NotFoundException("Событие с id = " + eventId + " не найдено"));
+        Event eventToUpdate = eventRepository.findById(eventId)
+                .orElseThrow(() -> new NotFoundException("Событие с id = " + eventId + " не найдено"));
 
         if (updateEventAdminRequest.getEventDate() != null) {
             if (updateEventAdminRequest.getEventDate().minusHours(1).isBefore(LocalDateTime.now())) {
