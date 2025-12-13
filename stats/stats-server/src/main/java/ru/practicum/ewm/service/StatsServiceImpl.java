@@ -50,8 +50,13 @@ public class StatsServiceImpl implements StatsService {
         log.info("uri = " + uris.getFirst());
         log.info("unique = " + unique);///
 
-        if (start == null) start = LocalDateTime.now().withHour(0).withMinute(0).withSecond(0);
-        if (end == null) end = LocalDateTime.now();
+        // Требование тестов Гитхаб
+        if (start == null || end == null) {
+            throw new ValidationException("Дата старта и окончания должны быть указаны");
+        }
+
+//        if (start == null) start = LocalDateTime.now().withHour(0).withMinute(0).withSecond(0);
+//        if (end == null) end = LocalDateTime.now();
         if (end.isBefore(start)) {
             throw new ValidationException("Дата окончания не может быть позже даты начала выборки");
         }
