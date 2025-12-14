@@ -1,0 +1,15 @@
+package ru.practicum.ewm.request.mapper;
+
+import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
+import org.springframework.stereotype.Component;
+import ru.practicum.ewm.request.dto.ParticipationRequestDto;
+import ru.practicum.ewm.request.model.Request;
+
+@Mapper(componentModel = "spring")
+@Component
+public interface RequestMapper {
+    @Mapping(source = "event.id", target = "event")
+    @Mapping(source = "requester.id", target = "requester")
+    ParticipationRequestDto toParticipationRequestDto(Request request);
+}

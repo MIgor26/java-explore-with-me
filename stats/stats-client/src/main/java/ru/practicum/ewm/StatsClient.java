@@ -1,53 +1,92 @@
 package ru.practicum.ewm;
 
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.ParameterizedTypeReference;
+import org.springframework.http.HttpStatusCode;
+import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestClient;
 import org.springframework.web.util.UriComponentsBuilder;
 
+import java.net.URI;
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 @Component
+@Slf4j
 public class StatsClient {
-    private final RestClient restClient;
 
-    public StatsClient(@Value("${stats-server.url}") String serverUrl) {
-        this.restClient = RestClient.builder().baseUrl(serverUrl).build();
+    private final String http = "http";
+
+    private String serverUri;
+    private RestClient restClient;
+
+    @Autowired
+    public StatsClient(@Value("${stats-server.uri:http://stats-server:9090}") String serverUri) {
+        this.serverUri = serverUri;
+        this.restClient = RestClient.create();
     }
 
-    public void adddHit(EndpointHitDto hitDto) {
+    public void addHit(EndpointHitDto hitDto) {
+        log.info("Начало работы StatsClient метод addHit");///
+        String uri = UriComponentsBuilder.newInstance()
+                .uri(URI.create(serverUri))
+                .path("/hit")
+                .toUriString();
+        log.info("В StatsClient в методе addHit сформирован запрос:");///
+        log.info(uri);///
+
         restClient.post()
-                .uri("/hit")
+                .uri(uri)
+                .contentType(MediaType.APPLICATION_JSON)
                 .body(hitDto)
                 .retrieve()
+                .onStatus(HttpStatusCode::is4xxClientError, (request, response) -> {
+                    throw new ClientException(
+                            response.getStatusCode().value(),
+                            response.getBody().toString()
+                    );
+                })
+                .onStatus(HttpStatusCode::is5xxServerError, (request, response) -> {
+                    throw new ClientException(
+                            response.getStatusCode().value(),
+                            response.getBody().toString()
+                    );
+                })
                 .toBodilessEntity();
     }
 
     public List<ViewStatsDto> getStats(LocalDateTime start, LocalDateTime end, List<String> uris, Boolean unique) {
-        UriComponentsBuilder builder = UriComponentsBuilder
-                .fromPath("/stats")
-                .queryParam("start", start.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")))
-                .queryParam("end", end.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
+        log.info("Начало работы StatsClient метод getStats");///
+        String uriWithParams = UriComponentsBuilder.newInstance()
+                .uri(URI.create(serverUri))
+                .path("/stats")
+                .queryParam("start", start)
+                .queryParam("end", end)
+                .queryParam("uris", uris)
+                .queryParam("unique", unique)
+                .toUriString();
 
-        if (uris != null && !uris.isEmpty()) {
-            builder.queryParam("uris", uris);
-        }
-
-        if (unique != null) {
-            builder.queryParam("unique", unique);
-        }
+        log.info("В StatsClient в методе getStats сформирован запрос:");///
+        log.info(uriWithParams);///
 
         return restClient.get()
-                .uri(builder.build().toUri())
-                .retrieve()
-                .body(new ParameterizedTypeReference<List<ViewStatsDto>>() {
+                .uri(uriWithParams).retrieve()
+                .onStatus(HttpStatusCode::is4xxClientError, (request, response) -> {
+                    throw new ClientException(
+                            response.getStatusCode().value(),
+                            response.getBody().toString()
+                    );
+                })
+                .onStatus(HttpStatusCode::is5xxServerError, (request, response) -> {
+                    throw new ClientException(
+                            response.getStatusCode().value(),
+                            response.getBody().toString()
+                    );
+                })
+                .body(new ParameterizedTypeReference<>() {
                 });
     }
 }
-
-
-
-

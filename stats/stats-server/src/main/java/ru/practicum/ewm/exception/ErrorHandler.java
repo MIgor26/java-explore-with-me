@@ -9,10 +9,10 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 @RestControllerAdvice
 @Slf4j
 public class ErrorHandler {
-    @ExceptionHandler({ValidationException.class})
+    @ExceptionHandler(ValidationException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ErrorResponse handleValidation(final Exception e) {
-        log.error(e.getMessage());
+        log.warn("Ошибка валидации: {}", e.getMessage());
         return new ErrorResponse("Ошибка валидации: ", e.getMessage());
     }
 
