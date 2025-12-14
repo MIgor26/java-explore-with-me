@@ -6,6 +6,7 @@ import jakarta.validation.constraints.PositiveOrZero;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.ewm.compilation.dto.CompilationDto;
 import ru.practicum.ewm.compilation.service.CompilationService;
@@ -16,6 +17,7 @@ import java.util.List;
 @RequestMapping(path = "/compilations")
 @RequiredArgsConstructor
 @Slf4j
+@Validated
 public class PubCompilationController {
     private final CompilationService compilationService;
 
@@ -23,8 +25,8 @@ public class PubCompilationController {
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
     public List<CompilationDto> getCompilationList(@RequestParam(required = false) Boolean pinned,
-                                                   @RequestParam(required = false, defaultValue = "0") @PositiveOrZero Integer from,
-                                                   @RequestParam(required = false, defaultValue = "10") @Positive Integer size) {
+                                                   @RequestParam(defaultValue = "0") @PositiveOrZero Integer from,
+                                                   @RequestParam(defaultValue = "10") @Positive Integer size) {
         log.info("GET/all in PubCompilationController. Получение подборок событий pinned = {}, from = {}, size = {}", pinned, from, size);
         return compilationService.getCompilationList(pinned, from, size);
     }

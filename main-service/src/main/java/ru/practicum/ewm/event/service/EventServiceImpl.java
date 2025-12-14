@@ -6,6 +6,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.ewm.EndpointHitDto;
 import ru.practicum.ewm.StatsClient;
 import ru.practicum.ewm.ViewStatsDto;
@@ -36,6 +37,7 @@ import java.util.stream.Collectors;
 @Service
 @RequiredArgsConstructor
 @Slf4j
+@Transactional(readOnly = true)
 public class EventServiceImpl implements EventService {
 
     private String appName = "main-service";
@@ -62,6 +64,7 @@ public class EventServiceImpl implements EventService {
 
     // Админ: редактирование данных события и его статуса (отклонение/публикация).
     @Override
+    @Transactional
     public EventFullDto updateEventByAdmin(Long eventId, UpdateEventAdminRequest updateEventAdminRequest) {
         Event eventToUpdate = eventRepository.findById(eventId)
                 .orElseThrow(() -> new NotFoundException("Событие с id = " + eventId + " не найдено"));
@@ -137,6 +140,7 @@ public class EventServiceImpl implements EventService {
 
     // Приватные: добавление нового события
     @Override
+    @Transactional
     public EventFullDto addEvent(Long userId, NewEventDto newEventDto) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new NotFoundException(String.format("Пользователь с id = %d не найден", userId)));
@@ -155,10 +159,7 @@ public class EventServiceImpl implements EventService {
         eventToSave.setCategory(category);
         eventToSave.setInitiator(user);
         eventRepository.save(eventToSave);
-        log.info("НОВОЕ. ДО СОБЫТИЯ");
-        System.out.println("НОВОЕ ДО СОБЫТИЯ СОУТ");
         log.info("Событие успешно сохранено");
-        System.out.println("Добавил для теста возможность просмотра Соут");
         return addConfirmedRequestsAndViews(eventMapper.toEventFullDto(eventToSave));
     }
 
@@ -172,6 +173,7 @@ public class EventServiceImpl implements EventService {
 
     // Приватные: изменение события добавленного текущим пользователем
     @Override
+    @Transactional
     public EventFullDto updateEventByInitiator(Long userId, Long eventId, UpdateEventUserRequest updateEventUserRequest) {
 
         Event eventToUpdate = eventRepository.findById(eventId)
@@ -224,6 +226,7 @@ public class EventServiceImpl implements EventService {
 
     // Приватные: изменение статуса (подтверждена, отменена) заявок на участие в событии текущего пользователя
     @Override
+    @Transactional
     public EventRequestStatusUpdateResult updateRequest(Long userId, Long eventId,
                                                         EventRequestStatusUpdateRequest eventRequest) {
         if (!userRepository.existsById(userId)) {
@@ -378,10 +381,7 @@ public class EventServiceImpl implements EventService {
                 .ip(userIp)
                 .timestamp(LocalDateTime.now())
                 .build();
-        log.info("Передача данных в сервер статистики о просмотре события id = {} и ip = {}", eventId, userIp);
-        log.info("Сформирован hitDto = {}", hitDto);
         statsClient.addHit(hitDto);
-        log.info("Событие получено");
         return addConfirmedRequestsAndViews(eventMapper.toEventFullDto(event));
     }
 

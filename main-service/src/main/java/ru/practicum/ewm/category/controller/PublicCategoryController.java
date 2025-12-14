@@ -5,6 +5,7 @@ import jakarta.validation.constraints.Positive;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.ewm.category.dto.CategoryDto;
 import ru.practicum.ewm.category.service.CategoryService;
@@ -15,6 +16,7 @@ import java.util.List;
 @RequestMapping("/categories")
 @RequiredArgsConstructor
 @Slf4j
+@Validated
 public class PublicCategoryController {
     private final CategoryService service;
 
@@ -30,7 +32,7 @@ public class PublicCategoryController {
     @Operation(summary = "Получение информации о категории по её идентификатору")
     @GetMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
-    private CategoryDto getCategoryById(@PathVariable @Positive Long id) {
+    public CategoryDto getCategoryById(@PathVariable @Positive Long id) {
         log.info("GET/id in PublicCategoryController. Получение информации о категории по id = {}", id);
         return service.getCategoryById(id);
     }

@@ -6,6 +6,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.ewm.StatsClient;
 import ru.practicum.ewm.ViewStatsDto;
 import ru.practicum.ewm.compilation.dto.CompilationDto;
@@ -29,6 +30,7 @@ import java.util.stream.Collectors;
 @Service
 @RequiredArgsConstructor
 @Slf4j
+@Transactional(readOnly = true)
 public class CompilationServiceImpl implements CompilationService {
     private final CompilationRepository compilationRepository;
     private final CompilationMapper compilationMapper;
@@ -39,6 +41,7 @@ public class CompilationServiceImpl implements CompilationService {
 
     // Администрирование: добавление новой подборки (подборка может не содержать событий)
     @Override
+    @Transactional
     public CompilationDto addCompilation(NewCompilationDto newCompilationDto) {
 
         Compilation compilation = compilationMapper.toCompilation(newCompilationDto);
@@ -57,6 +60,7 @@ public class CompilationServiceImpl implements CompilationService {
 
     // Администрирование: удаление подборки
     @Override
+    @Transactional
     public void deleteCompilation(Long compilationId) {
         compilationRepository.findById(compilationId).orElseThrow(() ->
                 new NotFoundException("Подборка не найдена с id = " + compilationId));
@@ -65,6 +69,7 @@ public class CompilationServiceImpl implements CompilationService {
 
     // Администрирование: обновить информацию о подборке
     @Override
+    @Transactional
     public CompilationDto updateCompilation(Long compilationId, UpdateCompilationRequest updateCompilationRequest) {
 
         Compilation compilation = compilationRepository.findById(compilationId).orElseThrow(() ->

@@ -11,13 +11,6 @@ import java.util.List;
 @Mapper(componentModel = "spring")
 public interface CompilationMapper {
 
-//    default Compilation toCompilation(NewCompilationDto newCompilationDto) {
-//        Compilation entity = new Compilation();
-//        entity.setPinned(newCompilationDto.getPinned() != null && newCompilationDto.getPinned());
-//        entity.setTitle(newCompilationDto.getTitle());
-//        return entity;
-//    }
-
     @Mapping(target = "events", ignore = true)
     Compilation toCompilation(NewCompilationDto newCompilationDto);
 

@@ -6,6 +6,7 @@ import jakarta.validation.constraints.Positive;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.ewm.compilation.dto.CompilationDto;
 import ru.practicum.ewm.compilation.dto.NewCompilationDto;
@@ -16,6 +17,7 @@ import ru.practicum.ewm.compilation.service.CompilationService;
 @RequestMapping(path = "/admin/compilations")
 @RequiredArgsConstructor
 @Slf4j
+@Validated
 public class AdmCompilationController {
 
     private final CompilationService compilationService;

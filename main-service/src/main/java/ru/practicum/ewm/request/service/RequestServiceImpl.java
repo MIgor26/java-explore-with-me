@@ -3,6 +3,7 @@ package ru.practicum.ewm.request.service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.ewm.event.model.Event;
 import ru.practicum.ewm.event.model.EventState;
 import ru.practicum.ewm.event.repository.EventRepository;
@@ -23,6 +24,7 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 @Slf4j
+@Transactional(readOnly = true)
 public class RequestServiceImpl implements RequestService {
     private final RequestRepository requestRepository;
     private final RequestMapper requestMapper;
@@ -46,6 +48,7 @@ public class RequestServiceImpl implements RequestService {
 
     // Добавление запроса от текущего пользователя на участие в событии
     @Override
+    @Transactional
     public ParticipationRequestDto addRequest(Long userId, Long eventId) {
 
         User requester = userRepository.findById(userId)
@@ -91,6 +94,7 @@ public class RequestServiceImpl implements RequestService {
 
     // Отмена своего запроса на участие в событии
     @Override
+    @Transactional
     public ParticipationRequestDto cancelRequest(Long userId, Long requestId) {
         Request request = requestRepository.findByIdAndRequesterId(requestId, userId)
                 .orElseThrow(() -> new NotFoundException("Запрос с идентификатором и/или идентификатором отправителя запроса не существует" + requestId + userId));

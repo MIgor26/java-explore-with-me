@@ -17,7 +17,7 @@ public class UpdateCompilationRequest {
     Boolean pinned;
 
     @Size(min = 1, max = 50)
-    String title;
+    private String title;
 
-    Set<Long> events;
+    private Set<Long> events;
 }

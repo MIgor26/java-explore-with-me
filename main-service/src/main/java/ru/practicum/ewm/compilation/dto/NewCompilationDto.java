@@ -19,7 +19,7 @@ public class NewCompilationDto {
 
     @NotBlank
     @Size(max = 50)
-    String title;
+    private String title;
 
-    Set<Long> events;
+    private Set<Long> events;
 }
