@@ -30,13 +30,10 @@ public class StatsClient {
     }
 
     public void addHit(EndpointHitDto hitDto) {
-        log.info("Начало работы StatsClient метод addHit");///
         String uri = UriComponentsBuilder.newInstance()
                 .uri(URI.create(serverUri))
                 .path("/hit")
                 .toUriString();
-        log.info("В StatsClient в методе addHit сформирован запрос:");///
-        log.info(uri);///
 
         restClient.post()
                 .uri(uri)
@@ -59,7 +56,6 @@ public class StatsClient {
     }
 
     public List<ViewStatsDto> getStats(LocalDateTime start, LocalDateTime end, List<String> uris, Boolean unique) {
-        log.info("Начало работы StatsClient метод getStats");///
         String uriWithParams = UriComponentsBuilder.newInstance()
                 .uri(URI.create(serverUri))
                 .path("/stats")
@@ -68,9 +64,6 @@ public class StatsClient {
                 .queryParam("uris", uris)
                 .queryParam("unique", unique)
                 .toUriString();
-
-        log.info("В StatsClient в методе getStats сформирован запрос:");///
-        log.info(uriWithParams);///
 
         return restClient.get()
                 .uri(uriWithParams).retrieve()
