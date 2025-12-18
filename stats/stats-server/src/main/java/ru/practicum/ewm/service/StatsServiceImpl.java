@@ -25,45 +25,21 @@ public class StatsServiceImpl implements StatsService {
     @Override
     @Transactional
     public void addHit(EndpointHitDto hitDto) {
-        log.info("Начало работы StatsServiceImpl метод addHit");///
-        log.info("Получены параметры");///
-        log.info("hitDto = " + hitDto);///
         EndpointHit hit = endpointHitMapper.toHit(hitDto);
-        log.info("После преобразования в сущность параметры следующие");///
-        log.info("hit = " + hit);///
         statRepository.save(hit);
-        log.info("Проверка сохранения");///
-        List<ViewStatsDto> statistics;///
-        statistics = statRepository.getUniqueStatsWithUris(LocalDateTime.now().minusYears(100), LocalDateTime.now(), List.of(hitDto.getUri()));///
-        for (ViewStatsDto stat : statistics) {
-            System.out.println(stat);///
-        }
-        log.info("Завершение работы StatsServiceImpl метод addHit");///
     }
 
     @Override
     public List<ViewStatsDto> getStats(LocalDateTime start, LocalDateTime end, List<String> uris, boolean unique) {
-        log.info("Начало работы StatsServiceImpl метод getStats");///
-        log.info("Получены параметры");
-        log.info("start = " + start);
-        log.info("end = " + end);
-        log.info("uri = " + uris.getFirst());
-        log.info("unique = " + unique);///
 
         // Требование тестов Гитхаб
         if (start == null || end == null) {
             throw new ValidationException("Дата старта и окончания должны быть указаны");
         }
 
-//        if (start == null) start = LocalDateTime.now().withHour(0).withMinute(0).withSecond(0);
-//        if (end == null) end = LocalDateTime.now();
         if (end.isBefore(start)) {
             throw new ValidationException("Дата окончания не может быть позже даты начала выборки");
         }
-
-        log.info("После обработки дат получаем следующее:");///
-        log.info("start = " + start);///
-        log.info("end = " + end);///
 
         List<ViewStatsDto> statistics;
 
@@ -79,10 +55,6 @@ public class StatsServiceImpl implements StatsService {
             } else {
                 statistics = statRepository.getStats(start, end);
             }
-        }
-        log.info("Получена статистика:");///
-        for (ViewStatsDto stat : statistics) {
-            System.out.println(stat);
         }
         return statistics;
     }
